@@ -1,0 +1,5 @@
+/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/build/CMakeFiles/sim_internet_red.dir
+/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/build/CMakeFiles/edit_cache.dir
+/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/build/CMakeFiles/rebuild_cache.dir
+/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/build/submodulos/jsonlib/CMakeFiles/edit_cache.dir
+/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/build/submodulos/jsonlib/CMakeFiles/rebuild_cache.dir
