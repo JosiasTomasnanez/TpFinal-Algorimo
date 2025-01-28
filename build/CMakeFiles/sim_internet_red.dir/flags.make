@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I"/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/include" -I"/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/submodulos/jsonlib/include"
 
-CXX_FLAGS = -g -g -std=gnu++11
+CXX_FLAGS =  -g -std=gnu++11
 

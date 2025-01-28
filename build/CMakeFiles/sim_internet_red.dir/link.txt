@@ -1,1 +1,1 @@
-/usr/bin/c++ -g -g CMakeFiles/sim_internet_red.dir/src/Dijkstra.cpp.o CMakeFiles/sim_internet_red.dir/src/TpFinal.cpp.o CMakeFiles/sim_internet_red.dir/src/inputJSON.cpp.o -o "/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/bin/sim_internet_red" 
+/usr/bin/c++  -g CMakeFiles/sim_internet_red.dir/src/Dijkstra.cpp.o CMakeFiles/sim_internet_red.dir/src/TpFinal.cpp.o CMakeFiles/sim_internet_red.dir/src/inputJSON.cpp.o -o "/home/josias/Escritorio/2parcial algoritmo/Tp3Algorimo/bin/sim_internet_red" 

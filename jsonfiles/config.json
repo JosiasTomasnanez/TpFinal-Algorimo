@@ -1,1 +1,1 @@
-{"ancho_de_banda":[[500,500,500],[500,500,500],[500,500,500]],"ancho_de_banda_terminales":[500,500,500],"cantidad_routers":3,"numero_de_terminales":[3,3,3]}
+{"ancho_de_banda":[[10000,10000,10000,10000],[10000,10000,10000,10000],[10000,10000,10000,10000],[10000,10000,10000,10000]],"ancho_de_banda_terminales":[10000,10000,10000,10000],"cantidad_routers":4,"numero_de_terminales":[20,20,20,20]}

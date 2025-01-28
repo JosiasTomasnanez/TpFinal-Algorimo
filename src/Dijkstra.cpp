@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <climits>
 #include "Dijkstra.h"
+#include <iostream>
 
 #define INFI INT_MAX
 #define MIEMBRO 1
@@ -9,88 +10,85 @@
 
 using namespace std;
 
-int* Dijkstra::dijkstra(int s, int t) {
-    int *D = new int[n];  // Distancias
-    int *S = new int[n];  // Conjunto S
-    int actual, k, b;
-    int menordist, nuevadist;
-
-    // Inicialización
+int Dijkstra :: encontrarMinimo(const int* distancia, const bool* visitado, int n) {
+    int minimo = INT_MAX, indice = -1;
     for (int i = 0; i < n; i++) {
-        S[i] = NO_MIEMBRO;
-        D[i] = INFI;
-        P[i] = -1;
-    }
-    S[s] = MIEMBRO;
-    D[s] = 0;
-    actual = s;
-    b = 1;
-
-    while (actual != t && b == 1) {
-        b = 0;
-        menordist = INFI;
-
-        for (int i = 0; i < n; i++) {
-            if (S[i] == NO_MIEMBRO) {
-                nuevadist = D[actual] + C[actual][i];
-                if (nuevadist < D[i]) {
-                    D[i] = nuevadist;
-                    P[i] = actual;
-                    b = 1;
-                }
-                if (D[i] < menordist) {
-                    menordist = D[i];
-                    k = i;
-                    b = 1;
-                }
-            }
-        }
-
-        if (b == 1) {
-            actual = k;
-            S[actual] = MIEMBRO;
-        } else {
-            break;  // Si no se encontró una mejora, terminamos
+        if (!visitado[i] && distancia[i] <= minimo) {
+            minimo = distancia[i];
+            indice = i;
         }
     }
-
-    // Si no se pudo alcanzar el nodo t, liberar la memoria y devolver nullptr
-    if (D[t] == INFI) {
-        delete[] D;
-        delete[] S;
-        return nullptr;  // Nodo no alcanzable
-    }
-
-    delete[] S;  // Liberar memoria para S
-
-    // Llamamos a la función obtenerCamino para devolver el camino
-    return obtenerCamino(s, t);
+    return indice;
 }
 
-// Función para obtener el camino desde el nodo s hasta el nodo t
-int* Dijkstra::obtenerCamino(int s, int t) {
-    // El tamaño máximo del camino es igual al número de nodos
-    int *camino = new int[MAX_SIZE_CAMINO]; // Asumimos que el número máximo de nodos es 256
-    int index = 0; // Índice para el arreglo
+// Implementación del algoritmo de Dijkstra
+int Dijkstra ::  dijkstra(int s, int t) {
+    int* distancia = new int[n];  // Array de distancias desde el nodo origen
+    int* predecesor = new int[n]; // Array de predecesores
+    bool* visitado = new bool[n]; // Array para marcar nodos visitados
 
-    // Si no hay camino
-    if (P[t] == -1) {
-        delete[] camino;
-        return nullptr;  // No hay camino
+    // Inicializar distancias, predecesores y visitados
+    for (int i = 0; i < n; i++) {
+        distancia[i] = INT_MAX;
+        predecesor[i] = -1;
+        visitado[i] = false;
+    }
+    distancia[s] = 0; // La distancia al nodo origen es 0
+
+    for (int i = 0; i < n - 1; i++) {
+        int u = encontrarMinimo(distancia, visitado, n);
+        if (u == -1) break; // Si no hay más nodos alcanzables
+        visitado[u] = true;
+
+        for (int v = 0; v < n; v++) {
+            // Actualizar la distancia al nodo vecino si se cumple la condición
+            if (!visitado[v] && C[u][v] != 0 && distancia[u] != INT_MAX &&
+                distancia[u] + C[u][v] < distancia[v]) {
+                distancia[v] = distancia[u] + C[u][v];
+                predecesor[v] = u;
+            }
+        }
     }
 
-    // Sigue los predecesores desde t hasta s
-    for (int nodo = t; nodo != s; nodo = P[nodo]) {
-        camino[index++] = nodo; // Guarda el nodo en el arreglo
-    }
-    camino[index++] = s; // Agrega el nodo de inicio al final del camino
+    delete[] distancia;  // Liberar memoria para el array de distancias
+    delete[] visitado;   // Liberar memoria para el array de visitados
+    return proximoNodo(predecesor, s, t); // Devolver el array de predecesores
+}
 
-    // El camino debe ser invertido para ir de s a t
-    int* caminoInvertido = new int[index];
-    for (int i = 0; i < index; i++) {
-        caminoInvertido[i] = camino[index - 1 - i];  // Invertimos el orden
+int Dijkstra :: proximoNodo(int* predecesor, int s, int t) {
+    
+    if (predecesor[t] == -1) {
+        
+        return -1; // Indicador de que no hay camino
+    }
+    
+
+    if (s == t) {
+        return s; // Si origen y destino son el mismo nodo
     }
 
-    delete[] camino;  // Liberamos el arreglo original
-    return caminoInvertido;  // Devolvemos el camino invertido
+    // Retroceder en la lista de predecesores para encontrar el primer nodo del camino
+    int actual = t;
+    while (predecesor[actual] != s) {
+        actual = predecesor[actual];
+    }
+    return actual; // El primer nodo al que debemos ir
+}
+
+
+// Función para imprimir el camino más corto del nodo s al t
+void Dijkstra :: imprimirCamino(int* predecesor, int s, int t) {
+    
+    
+    if (predecesor[t] == -1) {
+        
+        return; // Indicador de que no hay camino
+    }
+
+    if (t == -1 || t == s) {
+        cout << s << " ";
+        return;
+    }
+    imprimirCamino(predecesor, s, predecesor[t]);
+    cout << t << " ";
 }

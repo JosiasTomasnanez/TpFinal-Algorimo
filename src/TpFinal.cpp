@@ -94,7 +94,7 @@ template <class Paquete>
     aux->id=paquetes[0].id;
     aux->datopagina="";
     //aux.tamano=paquetes[0].tamano;          tamano en paquetes es el tamaño total de la pagina?
-    ordenarPaquetes(paquetes, 0, paquetes.size());
+    ordenarPaquetes(paquetes, 0, paquetes.size()-1);
     for(int i=0; i<paquetes.size(); i++){
         aux->datopagina= aux->datopagina+paquetes[i].datopaquete;
     }
@@ -152,7 +152,7 @@ private:
   }
 
 public:
-  ArbolPaquetes() {
+  ArbolPaquetes() { raiz=nullptr;
   };
   ~ArbolPaquetes<Paquete>() { eliminarRecursivo(raiz); };
   Pagina* CreaArbolBus(Paquete p){return ArbolBusq(p, raiz);};
@@ -201,58 +201,53 @@ template <class Paquete> void ArbolPaquetes<Paquete>::bor(NodoArbol<Paquete>*& d
 
 class Router{
      private:
-    ArbolBinario1Byte<coneccionTerminal>* terminales;
-    ArbolPaquetes<Paquete>* gestorPaquetes;
-    ColadeConecciones*routerVecinos;
-    Dijkstra* d;
-    int ocupacionPorCiclo;
-    int n;
-    int** tablaDestinos;
-    int* cantTerminales;
-    bitset<16> routerIp;
-    int anchoBandaT;
-     void comprobarMejorCamino(Paquete paq, int origen, int destino);
-    Cola< Paquete> paquetesParaAnalizar;
-     void separarPagina(Pagina pag);
-
-
+        ArbolBinario1Byte<coneccionTerminal>* terminales;
+        ArbolPaquetes<Paquete>* gestorPaquetes;
+        ColadeConecciones*routerVecinos;
+        Dijkstra* d; 
+        Cola<Paquete> paquetePerdidos;
+        int ocupacionPorCiclo;
+        int n;
+        int** tablaDestinos;//hacer otra tabla con los valores prefijados, a cada nodo  poniendo a quien le tiene que mandar 
+                            //el paquete , cosa de solo recalcular cada 2 ciclos
+        int* cantTerminales;
+        bitset<16> routerIp;
+        int anchoBandaT;
+        Cola< Paquete> paquetesParaAnalizar;
+        void comprobarMejorCamino(Paquete paq, int origen, int destino);
+        void separarPagina(Pagina pag);
+        void crearTablaDestino();
       public:
-      int getNumRouters() {return n;};
-      int* getNumTerminaales(){return cantTerminales;};
-       int getOcupacion(){return ocupacionPorCiclo;};
-       void setOcupacion(int ocupacion){ocupacionPorCiclo=ocupacion;};
-       void generarTerminales(int numTerminales){
-      for(int i=0;i<numTerminales;i++){
-      coneccionTerminal cone;
-      cone.terminal= new Terminal(this,i);
-      cone.anchoDeBanda=anchoBandaT;//ramdom
-      terminales->addArbol(cone);
+        Router(int n){gestorPaquetes=new ArbolPaquetes<Paquete>();terminales= new ArbolBinario1Byte<coneccionTerminal>(); this->n=n;};
+        ~Router(){delete gestorPaquetes;};
+
+        Cola<Paquete> getPaquetesPerdidos(){return paquetePerdidos;}
+        int getNumRouters() {return n;};
+        int* getNumTerminaales(){return cantTerminales;};
+        int getOcupacion(){return ocupacionPorCiclo;};
+        void setOcupacion(int ocupacion){ocupacionPorCiclo=ocupacion;};
+        void generarTerminales(int numTerminales){
+            for(int i=0;i<numTerminales;i++){
+                coneccionTerminal cone;
+                cone.terminal= new Terminal(this,i);
+                cone.anchoDeBanda=anchoBandaT;//ramdom
+                terminales->addArbol(cone);
       
-      }
-    };
-    
-   
-   Router(int numTerminales, bitset<16> ip,ColadeConecciones* vecinos,int n,int**tabla,int anchoBandaTerminales){
-                                            gestorPaquetes=new ArbolPaquetes<Paquete>();
-                                            anchoBandaT=anchoBandaTerminales;
-                                            generarTerminales(numTerminales);routerIp=ip; routerVecinos=vecinos;
-                                            terminales= new ArbolBinario1Byte<coneccionTerminal>(); tablaDestinos=tabla;
-                                            d=new Dijkstra(n,tablaDestinos); }
-  Router(){gestorPaquetes=new ArbolPaquetes<Paquete>();terminales= new ArbolBinario1Byte<coneccionTerminal>();};
-   ~Router(){delete gestorPaquetes;};
-    void config(){d=new Dijkstra(n,tablaDestinos);};
-    void setVecinos(ColadeConecciones* c){routerVecinos=c;};
-    void set_IP(bitset<16> b){routerIp= b;}
-    void setNumTerminales(int* nt){cantTerminales=nt;};
-   void recibirDeTerminal(Pagina pag);
-   ColadeConecciones* get_vecinos(){return routerVecinos;}
-   void set_tabla(int ** tablaPesos,int n){tablaDestinos=tablaPesos; this->n=n; d->set_C(tablaPesos);}
-   int** getTabla(){return tablaDestinos;};
-   void recibir(Paquete paq);
-   void setAnchoBanda(int ab){anchoBandaT=ab;}
-   void guardarPaquete(Paquete paq);
-   void ejecutarCiclo();//podriamos crear maquina de estados para ver que toca hacer cuando sea ciclo, como poner en lista de algun vecino
-   bitset<16> get_ip(){return routerIp;};
+                 }
+            };
+        void config(int** tablaPesos){d=new Dijkstra(n,tablaPesos); crearTablaDestino();};
+        void actualizarTablaDestino();
+        void setVecinos(ColadeConecciones* c){routerVecinos=c;};
+        void set_IP(bitset<16> b){routerIp= b;}
+        void setNumTerminales(int* nt){cantTerminales=nt;};
+        void recibirDeTerminal(Pagina pag);
+        ColadeConecciones* get_vecinos(){return routerVecinos;}
+        int** getTabla(){return tablaDestinos;};
+        void recibir(Paquete paq);
+        void setAnchoBanda(int ab){anchoBandaT=ab;}
+        void guardarPaquete(Paquete paq);
+        void ejecutarCiclo();//podriamos crear maquina de estados para ver que toca hacer cuando sea ciclo, como poner en lista de algun vecino
+        bitset<16> get_ip(){return routerIp;};
 };
 
  void  Router::ejecutarCiclo(){
@@ -260,7 +255,6 @@ class Router{
         Paquete p = paquetesParaAnalizar.get(i);
         coneccionTerminal t= terminales->buscarDato(p.destino);
         if(t.anchoDeBanda-t.terminal->getOcupacion()>= p.tamano){
-            cout<<"Paquete: "<< p.id << " guardado en la terminal: "<< t.terminal->getId()<<endl;
            guardarPaquete(p);
            t.terminal->setOcupacion(t.terminal->getOcupacion()-p.tamano);
         }
@@ -274,10 +268,9 @@ class Router{
     coneccionVecino p=routerVecinos->get(i);
      if(p.colaEnvio->size()!=0){
         Cola<Paquete>* cp= p.colaEnvio;
-     for(int j=0; j< cp->size();i++){
+     for(int j=0; j< cp->size();j++){
         Paquete paq= cp->get(j);
         if(p.anchoDeBanda-p.vecino->getOcupacion()>=paq.tamano ){ 
-            cout<< "Paquete: "<< paq.numeroPaquete<< " enviado al router: " << p.vecino->get_ip()<< endl;
             p.vecino->recibir(paq);
             p.vecino->setOcupacion(p.vecino->getOcupacion()-paq.tamano);
         }
@@ -290,6 +283,24 @@ class Router{
    
     }
  }
+
+void Router::crearTablaDestino(){
+tablaDestinos = new int*[n];
+for(int i=0;i<n;i++){
+    tablaDestinos[i] = new int[n];
+    for(int j=0; j<n; j++){
+        tablaDestinos[i][j]= d->dijkstra(i, j);
+    }
+}
+}
+
+void Router::actualizarTablaDestino(){
+for(int i=0;i<n;i++){
+    for(int j=0; j<n; j++){
+        tablaDestinos[i][j]= d->dijkstra(i, j);
+    }
+}
+}
 
 void Router::recibir(Paquete paq){
      bitset<8> aux1 = (paq.destino.to_ulong() >> 8) & 0xFF;  // Desplazamos y aplicamos la máscara para los primeros 8 bits
@@ -310,9 +321,12 @@ comprobarMejorCamino(paq, origen,destino);
 }
 
 void Router::comprobarMejorCamino(Paquete paq, int  origen, int  destino){
- int* caminoMasCorto = d->dijkstra(origen, destino);
+ if(tablaDestinos[origen][destino]==-1){
+    paquetePerdidos.add(paq);
+    return;
+ }
  bitset<16>aux;
- aux=caminoMasCorto[1]<<8;
+ aux=tablaDestinos[origen][destino]<<8;
  coneccionVecino* con=routerVecinos->buscarConeccion(aux);
  if(con!=nullptr){
     con->colaEnvio->add(paq);
@@ -358,8 +372,8 @@ static Pagina generarPagina(int* numTerminales, int numRouters, int idTerminal, 
     int randomTerminal = rand() % numTerminales[randomRouter];  // Elegir una terminal aleatoria dentro del router
     bitset<16> destino = (bitset<16>(randomRouter) << 8) | bitset<16>(randomTerminal);  // Combinar router y terminal
     nuevaPagina.destino = destino;
-    // Generar tamaño aleatorio entre 20 y 50
-    nuevaPagina.tamano = 20 + (rand() % 31);
+ 
+    nuevaPagina.tamano = 5 + (rand() % 11);
     // Asignar ID único
     nuevaPagina.id = idPag++;
     // Ignorar datopagina
@@ -391,13 +405,10 @@ void Terminal::recibirPaginas(Pagina* p) {
 // Método para generar y enviar páginas al router
 void Terminal::generarPag() {
     
-        int random= rand()%5;
+        int random= rand()%2;
         for(int i=0;i<random;i++){ 
-             cout<<"llego-"<<i<<endl<< flush;
         routerAsociado->recibirDeTerminal(generarPagina(routerAsociado->getNumTerminaales(),
                                             routerAsociado->getNumRouters(),id,routerAsociado->get_ip())); 
-       
-       cout<<"llego-"<<i<<endl<< flush;
         }
     
 }
@@ -424,15 +435,15 @@ class AdministradorDelSistema{
     AdministradorDelSistema( int n,int** anchoBanda,int* mt,int* mnt){this->n=n;matrizAdyacencia=anchoBanda; 
                             generarMatriz(anchoBanda,n);generarRouters(anchoBanda,n,mt,mnt);contadorCiclo=0;};
     
-  void initSim(int ciclosMax){for(int i=0;i<ciclosMax;i++){ciclo();}};
+  void initSim(int ciclosMax){for(int i=0;i<ciclosMax;i++){ciclo(); cout<< "ciclo ejecutado " << i<<endl<<flush;}};
 
 };
 
 void AdministradorDelSistema::ciclo(){
    if(contadorCiclo>=1){
     recalcularPesos();
-    for(int i = 0; i < n; i++){
-        routers.get(i)->set_tabla(matrizPesos,  n);
+    for(int j=0;j<routers.size();j++){
+        routers.get(j)->actualizarTablaDestino();
     }
     contadorCiclo=-1;
    }
@@ -449,7 +460,7 @@ for(int i = 0; i < n; i++){
         ColadeConecciones* colcon= routers.get(i)->get_vecinos();
         for (int j = 0; j < n; j++){
             if(i==j){
-                matrizPesos[i][j]=1;
+                matrizPesos[i][j]=0;
                 continue; 
             }
             coneccionVecino* con = colcon->buscarConeccion(routers.get(j)->get_ip());
@@ -473,12 +484,11 @@ for(int i = 0; i < n; i++){
 void AdministradorDelSistema::generarRouters(int** anchoBanda,int n,int* mt,int* mnt){
 for (int i = 0; i < n; i++) {
     bitset<16> b= i<<8;
-    Router* r = new Router();
+    Router* r = new Router(n);
     r->set_IP(b);
     r->setAnchoBanda(mt[i]);
     r->generarTerminales(mnt[i]);
-    r->config();
-    r->set_tabla(matrizPesos, n);
+    r->config(matrizPesos);
     r->setNumTerminales(mnt);
     routers.add(r);
     
@@ -511,7 +521,7 @@ void AdministradorDelSistema::generarMatriz(int ** ma, int n){
           matrizPesos[i] = new int[n];
         for (int j = 0; j < n; j++) {
             if(i==j){
-                matrizPesos[i][j]=1;
+                matrizPesos[i][j]=0;
                 continue;
             }
            if(ma[i][j]!=INT_MAX){
@@ -591,8 +601,7 @@ logfile.is_open();
     
 
   AdministradorDelSistema admin(cantidadRouters,matrizAdyacencia,anchoBandaTerminales,numTerminales);
-  admin.initSim(100);
-
+   admin.initSim(13);
    archivo.close();
    logfile.close();
     
@@ -604,3 +613,4 @@ logfile.is_open();
 
     return 0;
 }
+
