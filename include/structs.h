@@ -19,6 +19,11 @@ int numeroPaquete;
 int id;
 int totalPaquete;
 string datopaquete;
+bool operator==(const Paquete& otro) const {
+    return id == otro.id && tamano == otro.tamano && destino == otro.destino && 
+                 origen == otro.origen && numeroPaquete == otro.numeroPaquete &&
+                 totalPaquete == otro.totalPaquete;
+   }
 };
 struct coneccionVecino{
   int anchoDeBanda;

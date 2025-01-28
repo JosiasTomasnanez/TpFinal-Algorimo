@@ -215,6 +215,7 @@ class Router{
         int anchoBandaT;
         Cola< Paquete> paquetesParaAnalizar;
         void comprobarMejorCamino(Paquete paq, int origen, int destino);
+        Paquete buscarIdDiferente(int pos, Cola<Paquete>* c);
         void separarPagina(Pagina pag);
         void crearTablaDestino();
       public:
@@ -250,17 +251,41 @@ class Router{
         bitset<16> get_ip(){return routerIp;};
 };
 
+
+
+ Paquete Router::buscarIdDiferente(int pos,Cola<Paquete>* c) {
+    Paquete p = c->get(pos);
+    if (pos == c->size() - 1) {
+        return p; 
+    }
+    if (pos == 0) {
+      return buscarIdDiferente(pos + 1,c);
+    }
+    if (p.id != c->get(pos - 1).id) {
+        return p;
+    }
+    return buscarIdDiferente(pos + 1,c);
+}
+
+
  void  Router::ejecutarCiclo(){
-    for(int i=0; i < paquetesParaAnalizar.size();i++){
-        Paquete p = paquetesParaAnalizar.get(i);
+    Cola<Paquete>* aux= paquetesParaAnalizar.copy();
+    Cola<Paquete> paquetesABorrar;
+    while(!aux->esvacia()){
+        Paquete p = buscarIdDiferente(0,aux);
         coneccionTerminal t= terminales->buscarDato(p.destino);
         if(t.anchoDeBanda-t.terminal->getOcupacion()>= p.tamano){
            guardarPaquete(p);
            t.terminal->setOcupacion(t.terminal->getOcupacion()-p.tamano);
+           paquetesABorrar.encolar(p);
         }
+       aux->borrarDato(p);
     }
+    for(int i=0; i< paquetesABorrar.size(); i++){
+        paquetesParaAnalizar.borrarDato(paquetesABorrar.get(i));
+    }
+
     for (int j=0; j< terminales->size();j++) {
-     
      terminales->get( j).terminal->setOcupacion(0);
     }
 
@@ -275,12 +300,11 @@ class Router{
             p.vecino->setOcupacion(p.vecino->getOcupacion()-paq.tamano);
         }
      }
-         p.vecino->setOcupacion(0);
+        p.vecino->setOcupacion(0);
      }
    }
   for (int j=0; j< terminales->size();j++) {
      terminales->get( j).terminal->generarPag();
-   
     }
  }
 
@@ -601,7 +625,7 @@ logfile.is_open();
     
 
   AdministradorDelSistema admin(cantidadRouters,matrizAdyacencia,anchoBandaTerminales,numTerminales);
-   admin.initSim(13);
+   admin.initSim(100);
    archivo.close();
    logfile.close();
     

@@ -1,3 +1,5 @@
+#include <iostream>
+using namespace std;
 /**
  * @brief Clase Nodo que representa un nodo genérico para una estructura de
  * datos.
@@ -39,6 +41,8 @@ public:
                         //resto= lo que queda de la lista sin la cabeza
     void impre(void);
     int  size();
+   
+    T get(int pos);
     void borrarDato(T d) { borrarD(d, nullptr); }//borra el nodo que contiene d
     void borrar(void); //borra la cabeza
     void borrar_last();//borra el ultimo
@@ -50,12 +54,15 @@ public:
 template <class T> class Cola :public Lista<T> {
 public:
     Cola(void) { Lista<T>(); };
-    //~Cola(void);
+    Cola(Nodo<T>* n) : Lista<T>(n) {}
     T tope() { return this->last(); };
     bool colavacia(void) { return this->esvacia(); };
     void encolar(T a) { this->add(a); };
     void desencolar(void) { this->borrar_last(); };
     T ultimo(void) { return this->cabeza(); };
+    Cola<T>* restoCola();
+    void concat(Cola<T>* l1);
+    Cola<T>* copy(void);
 };
 template <class T>
 void Lista<T>::add(T d) 
@@ -64,6 +71,17 @@ void Lista<T>::add(T d)
     nuevo->set_next(czo);
     czo = nuevo;
 }
+template <class T>
+T Lista<T>::get(int pos) {
+    if (pos < 0 || this->esvacia()) {
+        return T(); // Retorna valor por defecto si la posición es inválida
+    }
+    if (pos == 0) {
+        return this->cabeza(); // Retorna el dato del nodo actual si es la posición buscada
+    }
+    return this->resto()->get(pos - 1); // Avanza al siguiente nodo y disminuye la posición
+}
+
 template <class T>
 bool Lista<T>::esvacia(void)
 {
@@ -84,8 +102,27 @@ Lista<T>* Lista<T>::resto(void)
     Lista* l = new Lista(czo->get_next());
     return (l);
 }
+template <class T>
+Cola<T>* Cola<T>::restoCola(void)
+{
+    Cola* c = new Cola(this->czo->get_next());
+    return (c);
+}
 
+template <class T> void Cola<T>::concat(Cola<T>* l1)
+{// le transfiere los datos de l1 a this
+    if (!(l1->esvacia())) {
+        this->concat(l1->restoCola());
+        this->add(l1->cabeza());
+    }
+}
 
+template <class T> Cola<T>* Cola<T>::copy(void)
+{
+    Cola<T>* aux = new Cola();
+    aux->concat(this);
+    return aux;
+}
 
 
 
@@ -127,16 +164,6 @@ template <class T> void Lista<T>::borrar_last()
         else this->resto()->borrar_last();
     }
 }
-template <class T>
-T Lista<T>::get(int pos) {
-    if (pos < 0 || this->esvacia()) {
-        return T(); // Retorna valor por defecto si la posición es inválida
-    }
-    if (pos == 0) {
-        return this->cabeza(); // Retorna el dato del nodo actual si es la posición buscada
-    }
-    return this->resto()->get(pos - 1); // Avanza al siguiente nodo y disminuye la posición
-}
 
 template <class T>
 void Lista<T>::borrarD(T d, Nodo<T>* ant)
@@ -155,4 +182,6 @@ void Lista<T>::borrarD(T d, Nodo<T>* ant)
 
     }
 }
+
+
 
