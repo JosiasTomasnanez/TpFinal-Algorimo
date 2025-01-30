@@ -28,8 +28,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # Agrega el ejecutable a partir de los archivos .cpp encontrados
 add_executable(sim_internet_red ${SOURCES})
 
-# Enlaza el ejecutable con la librería nlohmann/json (si es necesario)
-target_link_libraries(SimuladorRed nlohmann_json)
+# Enlaza el ejecutable con la librería nlohmann/json
+target_link_libraries(sim_internet_red nlohmann_json)
 
 # Establece el directorio de salida del binario
 set_target_properties(sim_internet_red PROPERTIES
