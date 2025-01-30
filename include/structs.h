@@ -1,44 +1,43 @@
 #include <bitset>
 using namespace std;
 
-template <typename T>
-class Cola;
+template <typename T> class Cola;
 class Router;
 class Terminal;
 
-struct coneccionTerminal{
-Terminal* terminal;
-int anchoDeBanda;
+struct coneccionTerminal {
+  Terminal *terminal;
+  int anchoDeBanda;
 };
 
-struct Paquete{
-bitset<16> destino;
-bitset<16> origen;
-int tamano;
-int numeroPaquete;
-int id;
-int totalPaquete;
-string datopaquete;
-bool operator==(const Paquete& otro) const {
-    return id == otro.id && tamano == otro.tamano && destino == otro.destino && 
-                 origen == otro.origen && numeroPaquete == otro.numeroPaquete &&
-                 totalPaquete == otro.totalPaquete;
-   }
+struct Paquete {
+  bitset<16> destino;
+  bitset<16> origen;
+  int tamano;
+  int numeroPaquete;
+  int id;
+  int totalPaquete;
+  string datopaquete;
+  bool operator==(const Paquete &otro) const {
+    return id == otro.id && tamano == otro.tamano && destino == otro.destino &&
+           origen == otro.origen && numeroPaquete == otro.numeroPaquete &&
+           totalPaquete == otro.totalPaquete;
+  }
 };
-struct coneccionVecino{
+struct coneccionVecino {
   int anchoDeBanda;
-  Router* vecino;
+  Router *vecino;
   bitset<16> ipVecino;
-  Cola<Paquete>* colaEnvio;
+  Cola<Paquete> *colaEnvio;
 };
-struct Pagina{
-bitset<16> destino;
-bitset<16> origen;
-int tamano;
-int id;
-string datopagina;
-bool operator==(const Pagina& otro) const {
-    return id == otro.id && tamano == otro.tamano && destino == otro.destino && 
-                 origen == otro.origen;
-   }
+struct Pagina {
+  bitset<16> destino;
+  bitset<16> origen;
+  int tamano;
+  int id;
+  string datopagina;
+  bool operator==(const Pagina &otro) const {
+    return id == otro.id && tamano == otro.tamano && destino == otro.destino &&
+           origen == otro.origen;
+  }
 };
