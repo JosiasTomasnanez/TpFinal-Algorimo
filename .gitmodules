@@ -1,3 +1,4 @@
-[submodule "submodulos/jsonlib"]
-	path = submodulos/jsonlib
-	url = https://github.com/nlohmann/json.git
+
+[submodule "submodulos"]
+	path = submodulos
+	url = https://github.com/JosiasTomasnanez/jsonLib.git

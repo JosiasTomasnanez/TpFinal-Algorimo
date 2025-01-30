@@ -43,6 +43,8 @@ public:
     int  size();
    
     T get(int pos);
+    T last();
+    bool contains(T d);
     void borrarDato(T d) { borrarD(d, nullptr); }//borra el nodo que contiene d
     void borrar(void); //borra la cabeza
     void borrar_last();//borra el ultimo
@@ -108,7 +110,14 @@ Cola<T>* Cola<T>::restoCola(void)
     Cola* c = new Cola(this->czo->get_next());
     return (c);
 }
-
+template <class T>
+T Lista<T>::last()
+{
+    if (!this->esvacia()) {
+        if (this->resto()->esvacia())return this->cabeza();
+        return this->resto()->last();
+    }return T();
+}
 template <class T> void Cola<T>::concat(Cola<T>* l1)
 {// le transfiere los datos de l1 a this
     if (!(l1->esvacia())) {
@@ -116,6 +125,18 @@ template <class T> void Cola<T>::concat(Cola<T>* l1)
         this->add(l1->cabeza());
     }
 }
+template <class T>
+bool Lista<T>::contains(T d) {
+    Nodo<T>* aux = czo; // Puntero auxiliar para recorrer la lista
+    while (aux != nullptr) {
+        if (aux->get_dato() == d) { // Compara el dato actual con el buscado
+            return true; // Retorna true si encuentra el elemento
+        }
+        aux = aux->get_next(); // Avanza al siguiente nodo
+    }
+    return false; // Retorna false si no se encuentra el elemento
+}
+
 
 template <class T> Cola<T>* Cola<T>::copy(void)
 {

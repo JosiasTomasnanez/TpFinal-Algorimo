@@ -37,4 +37,8 @@ bitset<16> origen;
 int tamano;
 int id;
 string datopagina;
+bool operator==(const Pagina& otro) const {
+    return id == otro.id && tamano == otro.tamano && destino == otro.destino && 
+                 origen == otro.origen;
+   }
 };

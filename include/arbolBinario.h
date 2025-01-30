@@ -9,7 +9,6 @@ private:
   T dato;
   
 public:
-
   NodoArbolBinario()
       : derecha(nullptr), izquierda(nullptr) , dato(T()){};
   NodoArbolBinario<T> *&get_der(void) { return derecha; };
@@ -57,7 +56,8 @@ T ArbolBinario1Byte<T>::get(int i) {
 }
 
 
-template <class T>
+
+  template <class T>
 T ArbolBinario1Byte<T>::buscarDato(bitset<16> posicion) {
     bitset<8> aux(posicion.to_ulong() & 0xFF);
     NodoArbolBinario<T>* nodo = raiz;
@@ -83,9 +83,12 @@ T ArbolBinario1Byte<T>::buscarDato(bitset<16> posicion) {
             nodo = nodo->get_izq();
         }
     }
+
+
     // Devuelve el dato almacenado en el nodo.
     return nodo->get_dato();
 }
+
 
 
 template <class T>
@@ -119,5 +122,3 @@ void ArbolBinario1Byte<T>::addArbol(T dato) {
     numero += 1;
     actual = bitset<8>(numero);
 }
-
-

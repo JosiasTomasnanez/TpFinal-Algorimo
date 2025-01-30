@@ -14,7 +14,7 @@ project(MiProyecto)
 set(CMAKE_CXX_STANDARD 11)
 
 # Agrega el submódulo de la librería nlohmann/json
-add_subdirectory(submodulos/jsonlib)
+add_subdirectory(submodulos/jsonLib)
 
 set(SOURCES
     src/Dijkstra.cpp
@@ -29,7 +29,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_executable(sim_internet_red ${SOURCES})
 
 # Enlaza el ejecutable con la librería nlohmann/json (si es necesario)
-target_link_libraries(sim_internet_red nlohmann_json)
+target_link_libraries(SimuladorRed nlohmann_json)
 
 # Establece el directorio de salida del binario
 set_target_properties(sim_internet_red PROPERTIES

@@ -14,10 +14,10 @@ class Terminal{
     Terminal(Router* r, int id);
     ~Terminal();
     
+    int getId(){return id;};
     int getOcupacion(){return ocupacionPorCiclo;};
     void setOcupacion(int ocupacion){ocupacionPorCiclo=ocupacion;};
-    int getId(){return id;};
-    
+    void escribirLog(Pagina* p);
     void recibirPaginas(Pagina* p);
     void generarPag();
 };
