@@ -30,9 +30,11 @@ Para su compilacion y gestion de la libreria de Json, es necesario disponer de c
 # Instalación del programa de simulacion de red
 
 1. **Ejecutar el script**: Puedes compilar el proyecto automáticamente utilizando el script compilador.sh: `./compilador.sh` o doble click en el mismo, y ejecutandolo con la terminal.
-     **Una alternativa**:  Crear una carpeta "build" `mkdir build` movernos dentro de ella
-       `cd build` una vez dentro ejecutar `cmake ..` y luego `make`, volvemos a la carpeta raiz
-       `cd ..`, veremos que se creo la carpeta bin con el binario del programa.
+    **Una alternativa**: 
+      Usar el comando `git submodule update --init --recursive` para clonar la libreria de json.
+      Crear una carpeta "build" `mkdir build`, movernos dentro de ella ejecutando `cd build`
+      una vez dentro ejecutar `cmake ..` y luego `make`, volvemos a la carpeta raiz
+      `cd ..`, veremos que se creo la carpeta bin con el binario del programa.
 
 2. **Ir a la carpeta bin**: Después de ejecutar el script, el archivo binario se generarán en la carpeta bin. Navega a esa carpeta: `cd bin`.
 
