@@ -102,14 +102,11 @@ Pagina *NodoArbol<Paquete>::armarPagina(vector<Paquete> &paquetes) {
   aux->origen = paquetes[0].origen;
   aux->id = paquetes[0].id;
 
-  // aux.tamano=paquetes[0].tamano;          tamano en paquetes es el tamaño
-  // total de la pagina?
   ordenarPaquetes(paquetes, 0, paquetes.size() - 1);
-  aux->tamano = 0;
   for (int i = 0; i < paquetes.size(); i++) {
-    aux->datopagina = aux->datopagina + paquetes[i].datopaquete;
-    aux->tamano += paquetes[i].tamano;
+    aux->datopagina += paquetes[i].datopaquete;
   }
+  aux->tamano = aux->datopagina.length(); // Definir el tamaño de la página como la longitud de datopagina
 
   return aux;
 }
@@ -416,7 +413,11 @@ void Router::separarPagina(Pagina pag) {
     p.origen = pag.origen;
     p.id = pag.id;
     p.tamano = tamañoPaquete; // Todos los paquetes tendrán el tamaño completo
-    recibir(p);               // Enviar el paquete al método recibir
+    // Extraer el segmento correspondiente del string datopagina
+    int start = i * tamañoPaquete;
+    p.datopaquete = pag.datopagina.substr(start, tamañoPaquete);
+
+    recibir(p); // Enviar el paquete al método recibir
   }
 }
 
@@ -427,6 +428,21 @@ void Router::guardarPaquete(Paquete paq) {
 }
 
 void Router::recibirDeTerminal(Pagina pag) { separarPagina(pag); }
+
+static string generarDatos(int tamano) {
+  const char charset[] =
+      "0123456789"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz";
+  string result;
+  result.resize(tamano);
+
+  for (int i = 0; i < tamano; ++i) {
+    result[i] = charset[rand() % (sizeof(charset) - 1)];
+  }
+
+  return result;
+}
 
 static Pagina generarPagina(int *numTerminales, int numRouters, int idTerminal,
                             bitset<16> ipRouter) {
@@ -449,6 +465,9 @@ static Pagina generarPagina(int *numTerminales, int numRouters, int idTerminal,
   nuevaPagina.tamano = 5 + (rand() % 12);
   // Asignar ID único
   nuevaPagina.id = idPag++;
+
+  // Generar datos de la página
+  nuevaPagina.datopagina = generarDatos(nuevaPagina.tamano);
 
   return nuevaPagina;
 }

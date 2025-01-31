@@ -38,6 +38,6 @@ struct Pagina {
   string datopagina;
   bool operator==(const Pagina &otro) const {
     return id == otro.id && tamano == otro.tamano && destino == otro.destino &&
-           origen == otro.origen;
+           origen == otro.origen && datopagina == otro.datopagina;
   }
 };
