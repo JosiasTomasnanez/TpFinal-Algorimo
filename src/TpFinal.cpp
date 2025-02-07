@@ -14,6 +14,7 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include <sys/time.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -230,9 +231,7 @@ private:
   Cola<Paquete> paquetePerdidos;
   int ocupacionPorCiclo;
   int n;
-  int **tablaDestinos; // hacer otra tabla con los valores prefijados, a cada
-                       // nodo  poniendo a quien le tiene que mandar el paquete
-                       // , cosa de solo recalcular cada 2 ciclos
+  int **tablaDestinos; 
   int *cantTerminales;
   bitset<16> routerIp;
   int anchoBandaT;
@@ -277,9 +276,7 @@ public:
   void recibir(Paquete paq);
   void setAnchoBanda(int ab) { anchoBandaT = ab; }
   void guardarPaquete(Paquete paq);
-  void
-  ejecutarCiclo(); // podriamos crear maquina de estados para ver que toca hacer
-                   // cuando sea ciclo, como poner en lista de algun vecino
+  void ejecutarCiclo(); 
   bitset<16> get_ip() { return routerIp; };
 };
 
@@ -447,6 +444,9 @@ static string generarDatos(int tamano) {
 static Pagina generarPagina(int *numTerminales, int numRouters, int idTerminal,
                             bitset<16> ipRouter) {
   Pagina nuevaPagina;
+    struct timeval tv;
+    gettimeofday(&tv, NULL); // Obtener tiempo actual en segundos y microsegundos
+    srand(tv.tv_sec * 1000000 + tv.tv_usec);
   // Calcular el origen: los primeros 8 bits son el router (ipRouter.to_ulong()
   // >> 8), y los últimos 8 bits son el idTerminal
   bitset<16> origen = ipRouter;
